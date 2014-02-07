@@ -11,5 +11,7 @@ SecretShareAjax::Application.routes.draw do
 
   delete "users/:id/friendships", to: "friendships#destroy", as: "friendships"
 
+  resources :tags, only: :index
+
   root :to => "users#show"
 end

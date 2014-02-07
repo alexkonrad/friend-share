@@ -18,6 +18,8 @@ class UsersController < ApplicationController
   end
 
   def show
+    @tags = Tag.all
+
     if params.include?(:id)
       @user = User.find(params[:id])
     else

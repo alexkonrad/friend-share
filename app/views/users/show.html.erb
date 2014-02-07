@@ -1,8 +1,69 @@
 <h1><%= @user.username %></h1>
 
 <h2>Secrets</h2>
-<ul>
+<ul class="secrets">
   <% @user.received_secrets.each do |secret| %>
     <li><%= secret.title %></li>
   <% end %>
 </ul>
+
+<%= render 'secrets/form' %>
+
+<script type="application/json" id="bootstrapped_tags_json">
+ { "tags" : <%= @tags.to_json.html_safe %>}
+</script>
+
+<script type="text/template" id="tag_template">
+<%% var tags = JSON.parse($("#bootstrapped_tags_json").html()); %>
+<select>
+<%% tags.tags.forEach(function (tag) { %>
+  <option value="<%%= tag.id %>"><%%=tag.title %></option>
+<%%  });%>
+</select>
+</script>
+
+<script>
+
+$(document).ready(function () {
+
+  var tags = JSON.parse($("#bootstrapped_tags_json").html());
+  tags.tags.forEach(function(tag) {
+    $('#secret_tags').append("<option value=" + tag.id + ">" + tag.title + "</option>");
+  })
+
+
+  var addSecretTagSelect = function() {
+    var tag_template = $('#tag_template').html();
+    var compiled_template = _.template(tag_template);
+    $('#secret-tag-selects').append(compiled_template);
+  }
+
+
+  $('#one_more_tag').on("click", function(event){
+    event.preventDefault();
+    addSecretTagSelect();
+  })
+
+
+  var recipient_id = $('#secret_recipient_id').attr('value')
+  $('.secrets_form').on("submit", function(event) {
+    event.preventDefault();
+    var data = ($(event.target).serialize());
+    var $this = $(this);
+
+    $.ajax({
+      url: "/secrets",
+      type: "post",
+      data: data ,
+      success: function (resp) {
+        console.log(resp);
+        $('#secret_title').val("");
+        $('.secrets').append("<li>" + resp.title +  "</li>");
+      }
+    });
+  });
+
+})
+
+</script>
+

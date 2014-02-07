@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140207141907) do
+ActiveRecord::Schema.define(:version => 20140207192455) do
 
   create_table "friendships", :force => true do |t|
     t.integer  "out_friend_id", :null => false
@@ -24,6 +24,15 @@ ActiveRecord::Schema.define(:version => 20140207141907) do
   add_index "friendships", ["in_friend_id"], :name => "index_friendships_on_in_friend_id"
   add_index "friendships", ["out_friend_id"], :name => "index_friendships_on_out_friend_id"
 
+  create_table "secret_taggings", :force => true do |t|
+    t.integer  "secret_id",  :null => false
+    t.integer  "tag_id",     :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "secret_taggings", ["secret_id", "tag_id"], :name => "index_secret_taggings_on_secret_id_and_tag_id", :unique => true
+
   create_table "secrets", :force => true do |t|
     t.string   "title",        :null => false
     t.integer  "author_id",    :null => false
@@ -34,6 +43,12 @@ ActiveRecord::Schema.define(:version => 20140207141907) do
 
   add_index "secrets", ["author_id"], :name => "index_secrets_on_author_id"
   add_index "secrets", ["recipient_id"], :name => "index_secrets_on_recipient_id"
+
+  create_table "tags", :force => true do |t|
+    t.string   "title",      :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username",        :null => false
