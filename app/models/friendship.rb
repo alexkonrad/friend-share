@@ -13,4 +13,7 @@ class Friendship < ActiveRecord::Base
     (out_friend_id != in_friend_id) && !exists?(out_friend_id: out_friend_id, in_friend_id: in_friend_id) && !exists?(out_friend_id: in_friend_id, in_friend_id: out_friend_id)
   end
 
+  def self.can_unfriend?(out_friend_id, in_friend_id)
+    (out_friend_id != in_friend_id) && (exists?(out_friend_id: out_friend_id, in_friend_id: in_friend_id) || exists?(out_friend_id: in_friend_id, in_friend_id: out_friend_id))
+  end
 end

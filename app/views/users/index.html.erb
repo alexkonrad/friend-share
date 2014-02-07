@@ -1,9 +1,79 @@
+<div class="users">
 <h1>Users</h1>
 <% @users.each do |user| %>
 
   <h2><%= user.username %></h2>
 
-  <% if Friendship.can_friend?(user.id, current_user.id) %>
-    <%= button_to "Friend", friendships_url(user), method: :post %>
-  <% end %>
+  <div class="friend_buttons">
+    <% friend_status =  Friendship.can_friend?(user.id, current_user.id) ? "friend can-friend" : "friend" %>
+      <button class="<%= friend_status %>" data-friend-id="<%= user.id %>">Friend</button>
+
+    <% unfriend_status =  Friendship.can_unfriend?(user.id, current_user.id) ? "unfriend can-unfriend" : "unfriend" %>
+      <button class="<%= unfriend_status %>" data-friend-id="<%= user.id %>">Unfriend</button>
+  </div>
 <% end %>
+</div>
+
+<script>
+$(document).ready( function() {
+  $('.users').on("click", ".friend", function() {
+    var $this = $(this);
+    var friendId = $this.attr('data-friend-id');
+    $this.attr("disabled", "disabled");
+    $this.empty();
+    $this.append('Friending...');
+    $.ajax({
+      url: "/users/" + friendId + "/friendships",
+      type: "post",
+      data: {},
+      success: function () {
+        $this.empty();
+        $this.append("Friend");
+        $this.removeAttr("disabled");
+        $(".friend[data-friend-id=" + friendId + "]").toggleClass("can-friend");
+        $(".unfriend[data-friend-id=" + friendId + "]").toggleClass("can-unfriend");
+      }
+    });
+  });
+
+  $('.users').on("click", ".unfriend", function() {
+    var $this = $(this);
+    var friendId = $this.attr('data-friend-id');
+    $this.attr("disabled", "disabled");
+    $this.empty();
+    $this.append('Unfriending...');
+    $.ajax({
+      url: "/users/" + friendId + "/friendships/",
+      type: "delete",
+      data: {},
+      success: function () {
+        $this.empty();
+        $this.append("Unfriend");
+        $this.removeAttr("disabled");
+        $(".friend[data-friend-id=" + friendId + "]").toggleClass("can-friend");
+        $(".unfriend[data-friend-id=" + friendId + "]").toggleClass("can-unfriend");
+      }
+    });
+  });
+})
+
+</script>
+
+<style>
+.friend {
+  display: none;
+}
+
+.unfriend {
+  display: none;
+}
+
+.can-friend {
+  display: inline;
+}
+
+.can-unfriend {
+  display: inline;
+}
+
+</style>
