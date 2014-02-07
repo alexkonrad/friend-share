@@ -1,0 +1,8 @@
+<h1><%= @user.username %></h1>
+
+<h2>Secrets</h2>
+<ul>
+  <% @user.received_secrets.each do |secret| %>
+    <li><%= secret.title %></li>
+  <% end %>
+</ul>
